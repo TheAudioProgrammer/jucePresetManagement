@@ -1,0 +1,4 @@
+**/JuceLibraryCode/
+**/Builds/
+*.exe
+*.pkg
