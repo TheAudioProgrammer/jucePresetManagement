@@ -2,9 +2,17 @@
 
 <JUCERPROJECT id="VNu7qj" name="JucePresetManager" projectType="audioplug"
               useAppConfig="0" displaySplashScreen="1" jucerFormatVersion="1"
-              companyName="TAP" version="0.0.1">
+              companyName="TAP" version="0.0.1" cppLanguageStandard="17">
   <MAINGROUP id="RRpdHw" name="JucePresetManager">
     <GROUP id="{D17E9897-EF34-A91C-A338-6713CAA4ACD8}" name="Source">
+      <GROUP id="{FCD722C4-0EC4-585F-609A-627DD903357A}" name="Service">
+        <FILE id="CFHMbT" name="PresetManager.cpp" compile="1" resource="0"
+              file="Source/Service/PresetManager.cpp"/>
+        <FILE id="FBoXm2" name="PresetManager.h" compile="0" resource="0" file="Source/Service/PresetManager.h"/>
+      </GROUP>
+      <GROUP id="{563FD316-4EA6-51C3-AEB8-0B366A85B188}" name="Gui">
+        <FILE id="kS7HKo" name="PresetPanel.h" compile="0" resource="0" file="Source/Gui/PresetPanel.h"/>
+      </GROUP>
       <GROUP id="{77CC1B33-5DF4-E7DB-59F2-15F756C1DF3F}" name="Utility">
         <FILE id="Pq7ulx" name="ParameterHelper.h" compile="0" resource="0"
               file="Source/Utility/ParameterHelper.h"/>

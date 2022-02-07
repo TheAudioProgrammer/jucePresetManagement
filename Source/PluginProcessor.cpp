@@ -7,6 +7,10 @@ JucePresetManagerAudioProcessor::JucePresetManagerAudioProcessor() :
         .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
     valueTreeState(*this, nullptr, ProjectInfo::projectName, Utility::ParameterHelper::createParameterLayout())
 {
+    valueTreeState.state.setProperty(Service::PresetManager::presetNameProperty, "", nullptr);
+    valueTreeState.state.setProperty("version", ProjectInfo::versionString, nullptr);
+
+    presetManager = std::make_unique<Service::PresetManager>(valueTreeState);
 }
 
 JucePresetManagerAudioProcessor::~JucePresetManagerAudioProcessor()

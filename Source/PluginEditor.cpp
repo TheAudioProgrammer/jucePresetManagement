@@ -3,10 +3,12 @@
 
 JucePresetManagerAudioProcessorEditor::JucePresetManagerAudioProcessorEditor (JucePresetManagerAudioProcessor& p) :
 	AudioProcessorEditor(&p),
-	audioProcessor(p),
-	genericAudioProcessorEditor(p)
+	genericAudioProcessorEditor(p),
+	presetPanel(p.getPresetManager()),
+    audioProcessor(p)
 {
     addAndMakeVisible(genericAudioProcessorEditor);
+    addAndMakeVisible(presetPanel);
 
     setResizable(true, true);
     setSize (600, 500);
@@ -25,4 +27,5 @@ void JucePresetManagerAudioProcessorEditor::resized()
 {
     genericAudioProcessorEditor.setBounds(getLocalBounds()
         .withSizeKeepingCentre(getLocalBounds().proportionOfWidth(0.9f), getLocalBounds().proportionOfHeight(0.5f)));
+    presetPanel.setBounds(getLocalBounds().removeFromTop(proportionOfHeight(0.1f)));
 }

@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 #include "Utility/ParameterHelper.h"
+#include "Service/PresetManager.h"
 
 class JucePresetManagerAudioProcessor  : public juce::AudioProcessor
 {
@@ -43,7 +44,11 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    Service::PresetManager& getPresetManager() { return *presetManager; }
+
 private:
     AudioProcessorValueTreeState valueTreeState;
+    std::unique_ptr<Service::PresetManager> presetManager;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JucePresetManagerAudioProcessor)
 };
