@@ -71,7 +71,8 @@ namespace Gui
 			}
 			if (button == &deleteButton)
 			{
-				presetManager.deletePreset(presetManager.getCurrentPreset());
+				// presetManager.deletePreset(presetManager.getCurrentPreset());
+                presetManager.deletePreset(presetList.getSelectedId());
 				loadPresetList();
 			}
 		}
@@ -79,7 +80,8 @@ namespace Gui
 		{
 			if (comboBoxThatHasChanged == &presetList)
 			{
-				presetManager.loadPreset(presetList.getItemText(presetList.getSelectedItemIndex()));
+				// presetManager.loadPreset(presetList.getItemText(presetList.getSelectedItemIndex()));
+                presetManager.loadPreset(presetList.getSelectedId());
 			}
 		}
 
@@ -96,8 +98,11 @@ namespace Gui
 			presetList.clear(dontSendNotification);
 			const auto allPresets = presetManager.getAllPresets();
 			const auto currentPreset = presetManager.getCurrentPreset();
-			presetList.addItemList(allPresets, 1);
-			presetList.setSelectedItemIndex(allPresets.indexOf(currentPreset), dontSendNotification);
+             auto *popupMenu = presetList.getRootMenu();
+            *popupMenu = presetManager.getPresetPopupMenu();
+            // TODO: SET SELECTED ITEM INDEX DO NOT SEND NOTIFICATION
+//			presetList.addItemList(allPresets, 1);
+//			presetList.setSelectedItemIndex(allPresets.indexOf(currentPreset), dontSendNotification);
 		}
 
 		Service::PresetManager& presetManager;

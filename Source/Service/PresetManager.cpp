@@ -84,6 +84,44 @@ namespace Service
 		currentPreset.setValue(presetName);
 
 	}
+    
+    // cedrata overloads
+    void PresetManager::deletePreset(const int& id)
+    {
+        const auto it = avaiablePresets.find(id);
+        if (it == avaiablePresets.end())
+        {
+            DBG("Preset with ID " << id << " does not exist");
+            jassertfalse;
+            return;
+        }
+        
+        if (it->second.deleteFile())
+        {
+            DBG("Prset file " + it->second.getFullPathName() + " could not be deleted");
+            return;
+        }
+        
+        currentPreset.setValue("");
+    }
+
+    void PresetManager::loadPreset(const int& id)
+    {
+        const auto it = avaiablePresets.find(id);
+        if (it == avaiablePresets.end())
+        {
+            DBG("Preset with ID " << id << " does not exist");
+            jassertfalse;
+            return;
+        }
+        
+        XmlDocument xmlDocument{ it->second };
+        const auto valueTreeToLoad = ValueTree::fromXml(*xmlDocument.getDocumentElement());
+        
+        valueTreeState.replaceState(valueTreeToLoad);
+        currentPreset.setValue(it->second.getFileNameWithoutExtension());
+    }
+    // end cedrata overloads
 
 	int PresetManager::loadNextPreset()
 	{
@@ -106,6 +144,12 @@ namespace Service
 		loadPreset(allPresets.getReference(previousIndex));
 		return previousIndex;
 	}
+    
+    PopupMenu PresetManager::getPresetPopupMenu()
+    {
+        avaiablePresets.clear();
+        return buildSubMenuRecursive(defaultDirectory);
+    }
 
 	StringArray PresetManager::getAllPresets() const
 	{
@@ -128,4 +172,27 @@ namespace Service
 	{
 		currentPreset.referTo(treeWhichHasBeenChanged.getPropertyAsValue(presetNameProperty, nullptr));
 	}
+    
+    PopupMenu PresetManager::buildSubMenuRecursive(File directoryToExplore)
+    {
+        PopupMenu subMenu;
+        auto directoryPresets = directoryToExplore.findChildFiles(File::TypesOfFileToFind::findFiles, false, "*." + extension, File::FollowSymlinks::no);
+        directoryPresets.sort();
+        
+       for (auto p: directoryPresets)
+       {
+           const auto presetId = (int)avaiablePresets.size() + 1;
+           avaiablePresets.insert(std::pair<int, File>(presetId, p));
+           subMenu.addItem(PopupMenu::Item(p.getFileNameWithoutExtension())
+                           .setID(presetId)
+                           .setTicked(false)
+                           .setEnabled(true));
+       }
+        
+        auto directorySubMenus = directoryToExplore.findChildFiles(File::TypesOfFileToFind::findDirectories, false, "*", File::FollowSymlinks::no);
+        
+        for (auto s: directorySubMenus) subMenu.addSubMenu(s.getFileName(), buildSubMenuRecursive(s));
+        
+        return subMenu;
+    }
 }
