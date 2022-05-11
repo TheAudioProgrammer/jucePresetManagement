@@ -76,7 +76,6 @@ namespace Service
 			jassertfalse;
 			return;
 		}
-		// presetFile (XML) -> (ValueTree)
 		XmlDocument xmlDocument{ presetFile }; 
 		const auto valueTreeToLoad = ValueTree::fromXml(*xmlDocument.getDocumentElement());
 
@@ -102,7 +101,7 @@ namespace Service
             return;
         }
         
-        currentPreset.setValue("");
+        currentPresetId = 0;
     }
 
     void PresetManager::loadPreset(const int& id)
@@ -120,30 +119,35 @@ namespace Service
         
         valueTreeState.replaceState(valueTreeToLoad);
         currentPreset.setValue(it->second.getFileNameWithoutExtension());
+        currentPresetId = id;
     }
-    // end cedrata overloads
+    
+    void PresetManager::loadNextPreset()
+    {
+        if (avaiablePresets.empty())
+            return;
+        
+        if (currentPresetId == (int)avaiablePresets.size())
+            currentPresetId = 1;
+        else
+            ++currentPresetId;
+        
+        loadPreset(currentPresetId);
+    }
 
-	int PresetManager::loadNextPreset()
-	{
-		const auto allPresets = getAllPresets();
-		if (allPresets.isEmpty())
-			return -1;
-		const auto currentIndex = allPresets.indexOf(currentPreset.toString());
-		const auto nextIndex = currentIndex + 1 > (allPresets.size() - 1) ? 0 : currentIndex + 1;
-		loadPreset(allPresets.getReference(nextIndex));
-		return nextIndex;
-	}
+    void PresetManager::loadPreviousPreset()
+    {
+        
+        if (avaiablePresets.empty())
+            return;
 
-	int PresetManager::loadPreviousPreset()
-	{
-		const auto allPresets = getAllPresets();
-		if (allPresets.isEmpty())
-			return -1;
-		const auto currentIndex = allPresets.indexOf(currentPreset.toString());
-		const auto previousIndex = currentIndex - 1 < 0 ? allPresets.size() - 1 : currentIndex - 1;
-		loadPreset(allPresets.getReference(previousIndex));
-		return previousIndex;
-	}
+        if (currentPresetId == 1)
+            currentPresetId = (int)avaiablePresets.size();
+        else
+            --currentPresetId;
+        
+        loadPreset(currentPresetId);
+    }
     
     PopupMenu PresetManager::getPresetPopupMenu()
     {
@@ -167,6 +171,11 @@ namespace Service
 	{
 		return currentPreset.toString();
 	}
+    
+    int PresetManager::getCurrentPresetId() const
+    {
+        return currentPresetId;
+    }
 
 	void PresetManager::valueTreeRedirected(ValueTree& treeWhichHasBeenChanged)
 	{
@@ -191,7 +200,12 @@ namespace Service
         
         auto directorySubMenus = directoryToExplore.findChildFiles(File::TypesOfFileToFind::findDirectories, false, "*", File::FollowSymlinks::no);
         
-        for (auto s: directorySubMenus) subMenu.addSubMenu(s.getFileName(), buildSubMenuRecursive(s));
+        for (auto s: directorySubMenus)
+        {
+            auto const recusiveSubMenu = buildSubMenuRecursive(s);
+            if (recusiveSubMenu.getNumItems() > 0)
+                subMenu.addSubMenu(s.getFileName(), recusiveSubMenu);
+        }
         
         return subMenu;
     }
