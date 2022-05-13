@@ -33,15 +33,17 @@ namespace Service
 		if (presetName.isEmpty())
 			return;
 
-		currentPreset.setValue(presetName);
 		const auto xml = valueTreeState.copyState().createXml();
-		const auto presetFile = defaultDirectory.getChildFile(presetName + "." + extension);
+//		const auto presetFile = defaultDirectory.getChildFile(presetName + "." + extension);
+        const auto presetFile = File(presetName);
 		if (!xml->writeTo(presetFile))
 		{
 			DBG("Could not create preset file: " + presetFile.getFullPathName());
 			jassertfalse;
-		}
-	}
+        }
+        
+        currentPreset.setValue(presetFile.getFullPathName());
+    }
 
 	void PresetManager::deletePreset(const String& presetName)
 	{
@@ -62,6 +64,7 @@ namespace Service
 			return;
 		}
 		currentPreset.setValue("");
+        currentPresetId = getCurrentPresetId("");
 	}
 
 	void PresetManager::loadPreset(const String& presetName)
@@ -81,8 +84,8 @@ namespace Service
 
 		valueTreeState.replaceState(valueTreeToLoad);
 		currentPreset.setValue(presetName);
-
-	}
+        currentPresetId = getCurrentPresetId(presetName);
+    }
     
     // cedrata overloads
     void PresetManager::deletePreset(const int& id)
@@ -98,10 +101,10 @@ namespace Service
         if (it->second.deleteFile())
         {
             DBG("Prset file " + it->second.getFullPathName() + " could not be deleted");
+            currentPreset.setValue("");
+            currentPresetId = getCurrentPresetId("");
             return;
         }
-        
-        currentPresetId = 0;
     }
 
     void PresetManager::loadPreset(const int& id)
@@ -118,7 +121,7 @@ namespace Service
         const auto valueTreeToLoad = ValueTree::fromXml(*xmlDocument.getDocumentElement());
         
         valueTreeState.replaceState(valueTreeToLoad);
-        currentPreset.setValue(it->second.getFileNameWithoutExtension());
+        currentPreset.setValue(it->second.getFullPathName());
         currentPresetId = id;
     }
     
@@ -175,6 +178,15 @@ namespace Service
     int PresetManager::getCurrentPresetId() const
     {
         return currentPresetId;
+    }
+    
+    int PresetManager::getCurrentPresetId(const String &presetName) const
+    {
+        for (auto p: avaiablePresets)
+        {
+            if (p.second.getFullPathName() == presetName) return p.first;
+        }
+        return -1;
     }
 
 	void PresetManager::valueTreeRedirected(ValueTree& treeWhichHasBeenChanged)

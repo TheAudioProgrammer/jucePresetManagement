@@ -55,8 +55,9 @@ namespace Gui
 				fileChooser->launchAsync(FileBrowserComponent::saveMode, [&](const FileChooser& chooser)
 					{
 						const auto resultFile = chooser.getResult();
-						presetManager.savePreset(resultFile.getFileNameWithoutExtension());
+						presetManager.savePreset(resultFile.getFullPathName());
 						loadPresetList();
+                        presetManager.loadPreset(presetManager.getCurrentPresetId());
 					});
 			}
 			if (button == &previousPresetButton)
@@ -72,7 +73,7 @@ namespace Gui
 			if (button == &deleteButton)
 			{
                 presetManager.deletePreset(presetList.getSelectedId());
-                presetList.setSelectedId(presetManager.getCurrentPresetId());
+                loadPresetList();
 			}
 		}
 		void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override
@@ -98,7 +99,7 @@ namespace Gui
 			const auto currentPreset = presetManager.getCurrentPreset();
              auto *popupMenu = presetList.getRootMenu();
             *popupMenu = presetManager.getPresetPopupMenu();
-            presetList.setSelectedId(presetManager.getCurrentPresetId(), dontSendNotification);
+            presetList.setSelectedId(presetManager.getCurrentPresetId(presetManager.getCurrentPreset()), dontSendNotification);
         }
 
 		Service::PresetManager& presetManager;

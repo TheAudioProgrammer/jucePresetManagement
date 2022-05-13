@@ -26,6 +26,7 @@ namespace Service
 		StringArray getAllPresets() const;
 		String getCurrentPreset() const;
         int getCurrentPresetId() const;
+        int getCurrentPresetId(const String& presetName) const;
 	private:
 		void valueTreeRedirected(ValueTree& treeWhichHasBeenChanged) override;
         PopupMenu buildSubMenuRecursive(File directoryToExplore);
