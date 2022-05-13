@@ -1,6 +1,7 @@
 # Juce Preset Manager
-
-This is a small demo project on setting up a Preset Management system for audio plugins using the Juce framework
+This is a Fork of [this project](https://github.com/TheAudioProgrammer/jucePresetManagement).
+Currently I've added a tree view to the preset list combobox (so viewwing sub folders), and convertedn the methods that needed to.
+At the moment one issue only is present: load the last selected preset when starting up the application. DOING
 
 
 ### Requirements
