@@ -1,7 +1,6 @@
 # Juce Preset Manager
-This is a Fork of [this project](https://github.com/TheAudioProgrammer/jucePresetManagement).
-Currently I've added a tree view to the preset list combobox (so viewwing sub folders), and convertedn the methods that needed to.
-At the moment one issue only is present: load the last selected preset when starting up the application. DOING
+This is a Fork of [this project](https://github.com/TheAudioProgrammer/jucePresetManagement).\
+The aim of this fork is to provide a version of the JucePresetManagement original repo a "tree like" presets visualization which in my opinion could be a nice feature to have.
 
 
 ### Requirements
