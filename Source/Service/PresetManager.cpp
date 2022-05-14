@@ -8,7 +8,7 @@ namespace Service
 			.getChildFile(ProjectInfo::projectName)
 	};
 	const String PresetManager::extension{ "preset" };
-	const String PresetManager::presetNameProperty{ "presetName" };
+	const String PresetManager::presetPathProperty{ "presetPath" };
 
 	PresetManager::PresetManager(AudioProcessorValueTreeState& apvts) :
 		valueTreeState(apvts)
@@ -25,17 +25,17 @@ namespace Service
 		}
 
 		valueTreeState.state.addListener(this);
-		currentPreset.referTo(valueTreeState.state.getPropertyAsValue(presetNameProperty, nullptr));
+		currentPreset.referTo(valueTreeState.state.getPropertyAsValue(presetPathProperty, nullptr));
 	}
 
-	void PresetManager::savePreset(const String& presetName)
+	void PresetManager::savePreset(const String& presetPath)
 	{
-		if (presetName.isEmpty())
+		if (presetPath.isEmpty())
 			return;
 
 		const auto xml = valueTreeState.copyState().createXml();
-//		const auto presetFile = defaultDirectory.getChildFile(presetName + "." + extension);
-        const auto presetFile = File(presetName);
+//		const auto presetFile = defaultDirectory.getChildFile(presetPath + "." + extension);
+        const auto presetFile = File(presetPath);
 		if (!xml->writeTo(presetFile))
 		{
 			DBG("Could not create preset file: " + presetFile.getFullPathName());
@@ -45,12 +45,12 @@ namespace Service
         currentPreset.setValue(presetFile.getFullPathName());
     }
 
-	void PresetManager::deletePreset(const String& presetName)
+	void PresetManager::deletePreset(const String& presetPath)
 	{
-		if (presetName.isEmpty())
+		if (presetPath.isEmpty())
 			return;
 
-		const auto presetFile = defaultDirectory.getChildFile(presetName + "." + extension);
+		const auto presetFile = defaultDirectory.getChildFile(presetPath + "." + extension);
 		if (!presetFile.existsAsFile())
 		{
 			DBG("Preset file " + presetFile.getFullPathName() + " does not exist");
@@ -64,15 +64,15 @@ namespace Service
 			return;
 		}
 		currentPreset.setValue("");
-        currentPresetId = getCurrentPresetId("");
+        setCurrentPresetId();
 	}
 
-	void PresetManager::loadPreset(const String& presetName)
+	void PresetManager::loadPreset(const String& presetPath)
 	{
-		if (presetName.isEmpty())
+		if (presetPath.isEmpty())
 			return;
 
-		const auto presetFile = defaultDirectory.getChildFile(presetName + "." + extension);
+		const auto presetFile = defaultDirectory.getChildFile(presetPath + "." + extension);
 		if (!presetFile.existsAsFile())
 		{
 			DBG("Preset file " + presetFile.getFullPathName() + " does not exist");
@@ -83,8 +83,8 @@ namespace Service
 		const auto valueTreeToLoad = ValueTree::fromXml(*xmlDocument.getDocumentElement());
 
 		valueTreeState.replaceState(valueTreeToLoad);
-		currentPreset.setValue(presetName);
-        currentPresetId = getCurrentPresetId(presetName);
+		currentPreset.setValue(presetPath);
+        setCurrentPresetId();
     }
     
     // cedrata overloads
@@ -98,17 +98,20 @@ namespace Service
             return;
         }
         
-        if (it->second.deleteFile())
+        if (!it->second.deleteFile())
         {
             DBG("Prset file " + it->second.getFullPathName() + " could not be deleted");
-            currentPreset.setValue("");
-            currentPresetId = getCurrentPresetId("");
+            jassertfalse;
             return;
         }
+            currentPreset.setValue("");
+            setCurrentPresetId();
     }
 
     void PresetManager::loadPreset(const int& id)
     {
+        if (id == 0) return;
+        
         const auto it = avaiablePresets.find(id);
         if (it == avaiablePresets.end())
         {
@@ -155,7 +158,9 @@ namespace Service
     PopupMenu PresetManager::getPresetPopupMenu()
     {
         avaiablePresets.clear();
-        return buildSubMenuRecursive(defaultDirectory);
+        auto menu = buildSubMenuRecursive(defaultDirectory);
+        setCurrentPresetId();
+        return menu;
     }
 
 	StringArray PresetManager::getAllPresets() const
@@ -180,18 +185,9 @@ namespace Service
         return currentPresetId;
     }
     
-    int PresetManager::getCurrentPresetId(const String &presetName) const
-    {
-        for (auto p: avaiablePresets)
-        {
-            if (p.second.getFullPathName() == presetName) return p.first;
-        }
-        return -1;
-    }
-
 	void PresetManager::valueTreeRedirected(ValueTree& treeWhichHasBeenChanged)
 	{
-		currentPreset.referTo(treeWhichHasBeenChanged.getPropertyAsValue(presetNameProperty, nullptr));
+		currentPreset.referTo(treeWhichHasBeenChanged.getPropertyAsValue(presetPathProperty, nullptr));
 	}
     
     PopupMenu PresetManager::buildSubMenuRecursive(File directoryToExplore)
@@ -221,4 +217,23 @@ namespace Service
         
         return subMenu;
     }
+    
+    void PresetManager::setCurrentPresetId()
+    {
+        if (currentPreset.toString() == "")
+        {
+            currentPresetId = -1;
+            return;
+        }
+        
+        for (auto p: avaiablePresets)
+        {
+            if (p.second.getFullPathName() == currentPreset.toString())
+            {
+                currentPresetId = p.first;
+                break;
+            }
+        }
+    }
+
 }

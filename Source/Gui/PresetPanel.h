@@ -99,7 +99,7 @@ namespace Gui
 			const auto currentPreset = presetManager.getCurrentPreset();
              auto *popupMenu = presetList.getRootMenu();
             *popupMenu = presetManager.getPresetPopupMenu();
-            presetList.setSelectedId(presetManager.getCurrentPresetId(presetManager.getCurrentPreset()), dontSendNotification);
+            presetList.setSelectedId(presetManager.getCurrentPresetId(), dontSendNotification);
         }
 
 		Service::PresetManager& presetManager;

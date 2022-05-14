@@ -9,7 +9,7 @@ namespace Service
 	public:
 		static const File defaultDirectory;
 		static const String extension;
-		static const String presetNameProperty;
+		static const String presetPathProperty;
 
 		PresetManager(AudioProcessorValueTreeState&);
 
@@ -26,10 +26,10 @@ namespace Service
 		StringArray getAllPresets() const;
 		String getCurrentPreset() const;
         int getCurrentPresetId() const;
-        int getCurrentPresetId(const String& presetName) const;
 	private:
 		void valueTreeRedirected(ValueTree& treeWhichHasBeenChanged) override;
         PopupMenu buildSubMenuRecursive(File directoryToExplore);
+        void setCurrentPresetId();
         
         // Assumption 1: the keys in this map will always be ordered from 1 to N
         // where N is the size of the map. The keys are unique because of the way
