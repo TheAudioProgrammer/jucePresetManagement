@@ -133,7 +133,7 @@ namespace Service
         if (avaiablePresets.empty())
             return;
         
-        if (currentPresetId == (int)avaiablePresets.size())
+        if (currentPresetId == (int)avaiablePresets.size() || currentPresetId == -1)
             currentPresetId = 1;
         else
             ++currentPresetId;
@@ -147,7 +147,7 @@ namespace Service
         if (avaiablePresets.empty())
             return;
 
-        if (currentPresetId == 1)
+        if (currentPresetId == 1 || currentPresetId == -1)
             currentPresetId = (int)avaiablePresets.size();
         else
             --currentPresetId;
