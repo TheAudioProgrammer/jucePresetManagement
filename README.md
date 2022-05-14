@@ -2,6 +2,10 @@
 This is a Fork of [this project](https://github.com/TheAudioProgrammer/jucePresetManagement).\
 The aim of this fork is to provide a version of the JucePresetManagement original repo a "tree like" presets visualization which in my opinion could be a nice feature to have.
 
+The result should be something like this:
+![UI](./ReadmeAssets/JucePresetManagement-UI.png "Presets visualization")
+![Folders](./ReadmeAssets/JuePresetManagement-Folders.png "Folders visualization")
+
 
 ### Requirements
 
