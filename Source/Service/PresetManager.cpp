@@ -34,7 +34,6 @@ namespace Service
 			return;
 
 		const auto xml = valueTreeState.copyState().createXml();
-//		const auto presetFile = defaultDirectory.getChildFile(presetPath + "." + extension);
         const auto presetFile = File(presetPath);
 		if (!xml->writeTo(presetFile))
 		{
@@ -44,50 +43,7 @@ namespace Service
         
         currentPreset.setValue(presetFile.getFullPathName());
     }
-
-	void PresetManager::deletePreset(const String& presetPath)
-	{
-		if (presetPath.isEmpty())
-			return;
-
-		const auto presetFile = defaultDirectory.getChildFile(presetPath + "." + extension);
-		if (!presetFile.existsAsFile())
-		{
-			DBG("Preset file " + presetFile.getFullPathName() + " does not exist");
-			jassertfalse;
-			return;
-		}
-		if (!presetFile.deleteFile())
-		{
-			DBG("Preset file " + presetFile.getFullPathName() + " could not be deleted");
-			jassertfalse;
-			return;
-		}
-		currentPreset.setValue("");
-        setCurrentPresetId();
-	}
-
-	void PresetManager::loadPreset(const String& presetPath)
-	{
-		if (presetPath.isEmpty())
-			return;
-
-		const auto presetFile = defaultDirectory.getChildFile(presetPath + "." + extension);
-		if (!presetFile.existsAsFile())
-		{
-			DBG("Preset file " + presetFile.getFullPathName() + " does not exist");
-			jassertfalse;
-			return;
-		}
-		XmlDocument xmlDocument{ presetFile }; 
-		const auto valueTreeToLoad = ValueTree::fromXml(*xmlDocument.getDocumentElement());
-
-		valueTreeState.replaceState(valueTreeToLoad);
-		currentPreset.setValue(presetPath);
-        setCurrentPresetId();
-    }
     
-    // cedrata overloads
     void PresetManager::deletePreset(const int& id)
     {
         const auto it = avaiablePresets.find(id);

@@ -14,12 +14,8 @@ namespace Service
 		PresetManager(AudioProcessorValueTreeState&);
 
 		void savePreset(const String& presetName);
-		void deletePreset(const String& presetName);
-		void loadPreset(const String& presetName);
-        // cedrata overloads
         void deletePreset(const int& id);
         void loadPreset(const int& id);
-        // end cedrata overloads
         void loadNextPreset();
         void loadPreviousPreset();
         PopupMenu getPresetPopupMenu();
